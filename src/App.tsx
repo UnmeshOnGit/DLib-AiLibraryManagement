@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { School, LogOut, ShieldAlert, Sparkles, HelpCircle, BookOpen } from "lucide-react";
+import { School, LogOut, ShieldAlert, Sparkles, HelpCircle, BookOpen, Library } from "lucide-react";
 import ThemeToggle from "./components/ThemeToggle";
 import LandingPage from "./components/LandingPage";
 import StudentDashboard from "./components/StudentDashboard";
 import AdminDashboard from "./components/AdminDashboard";
+import BrandingSplashScreen from "./components/BrandingSplashScreen";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
+  const [showSplash, setShowSplash] = useState<boolean>(false);
   const [isDark, setIsDark] = useState<boolean>(() => {
     // Check local preferences
     const saved = localStorage.getItem("dbatu_theme");
@@ -41,6 +43,7 @@ export default function App() {
   const handleLoginSuccess = (loggedInUser: any) => {
     setUser(loggedInUser);
     localStorage.setItem("dbatu_session_user", JSON.stringify(loggedInUser));
+    setShowSplash(true);
   };
 
   const handleLogout = () => {
@@ -59,39 +62,37 @@ export default function App() {
       <div className="absolute top-[55%] left-[20%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 dark:from-emerald-600/5 dark:to-cyan-600/5 blur-[120px] pointer-events-none -z-10 select-none" />
 
       {/* Central Portal Header */}
-      <header
-        id="app-main-header"
-        className="sticky top-0 z-40 bg-white/80 dark:bg-slate-905/80 backdrop-blur-md border-b border-slate-150 dark:border-slate-800 shadow-3xs"
-      >
-        <div id="header-max-width" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div id="header-logo-group" className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-blue-600 dark:bg-blue-650 rounded-xl flex items-center justify-center text-white shadow-xs">
-              <School className="h-5 w-5" />
+      {user && (
+        <header
+          id="app-main-header"
+          className="sticky top-0 z-40 bg-white/80 dark:bg-slate-905/80 backdrop-blur-md border-b border-slate-150 dark:border-slate-800 shadow-3xs"
+        >
+          <div id="header-max-width" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div id="header-logo-group" className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-gradient-to-tr from-blue-600 to-amber-500 rounded-xl flex items-center justify-center text-white shadow-xs premium-glow-blue border border-white/10">
+                <Library className="h-5.5 w-5.5 text-white" />
+              </div>
+              <div>
+                <span className="text-base font-black tracking-widest block text-slate-900 dark:text-white uppercase font-sans">
+                  D-LIB
+                </span>
+                <span className="text-[9px] text-slate-455 dark:text-slate-300 font-mono tracking-widest block uppercase font-bold">
+                  D-LIB
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="text-sm font-black tracking-tight block text-slate-900 dark:text-white uppercase font-sans">
-                DBATU Central
-              </span>
-              <span className="text-[10px] text-slate-455 dark:text-slate-500 font-mono tracking-wider block uppercase">
-                Smart Academic Desk
-              </span>
-            </div>
-          </div>
 
-          <div id="header-interactive-controls" className="flex items-center gap-3.5">
-            {user && (
-              <div id="session-user-badge" className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-205 dark:border-slate-800 rounded-xl">
+            <div id="header-interactive-controls" className="flex items-center gap-3.5">
+              <div id="session-use-badge-or-role" className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-205 dark:border-slate-800 rounded-xl">
                 <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-350">
                   {user.name} ({user.role === 'admin' ? 'Librarian' : 'Student'})
                 </span>
               </div>
-            )}
 
-            {/* Light/Dark Toggle */}
-            <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+              {/* Light/Dark Toggle */}
+              <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
 
-            {user && (
               <button
                 id="logout-action-btn"
                 onClick={handleLogout}
@@ -102,10 +103,10 @@ export default function App() {
                 <LogOut className="h-4.5 w-4.5" />
                 <span className="text-xs font-bold hidden md:inline">Sign Out</span>
               </button>
-            )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main Content Area */}
       <main id="app-main-view" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -134,15 +135,20 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-medium">
-            © 2026 Dr. Babasaheb Ambedkar Technological University (DBATU), Lonere. All Rights Reserved.
+            © 2026 D-LIB Smart Digital Library Ecosystem. All Rights Reserved.
           </p>
           <div className="flex gap-4 font-mono font-semibold tracking-wide uppercase text-[9px]">
-            <span>DBATU CENTRAL LIBRARY CORRIDOR</span>
+            <span>D-LIB CENTRAL SYSTEMS</span>
             <span className="text-slate-300 dark:text-slate-800">|</span>
-            <span>IEEE HACKATHON PROTOCOL</span>
+            <span>INTELLIGENT KNOWLEDGE HUB</span>
           </div>
         </div>
       </footer>
+
+      {/* Cinematic Splash transition Overlay */}
+      {showSplash && (
+        <BrandingSplashScreen onComplete={() => setShowSplash(false)} />
+      )}
     </div>
   );
 }

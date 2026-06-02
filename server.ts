@@ -516,14 +516,10 @@ app.post("/api/auth/login", (req, res) => {
     });
   }
 
-  // Generate 6-digit OTP for Two-Step Verification
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  const expires = Date.now() + 5 * 60 * 1000; // 5 mins expiry
-
-  loginOtps.set(user.rollNumber.toUpperCase(), {
-    code: otpCode,
-    expires,
-    userData: {
+  // Return authenticated user immediately without 2FA step
+  return res.json({
+    success: true,
+    user: {
       id: user.id,
       rollNumber: user.rollNumber,
       name: user.name,
@@ -532,18 +528,6 @@ app.post("/api/auth/login", (req, res) => {
       branch: (user as any).branch,
       interests: (user as any).interests || []
     }
-  });
-
-  console.log(`[DBATU Smart Auth System] 2FA generated for ${user.name} (${user.role.toUpperCase()}). OTP is: ${otpCode}`);
-
-  return res.json({
-    success: true,
-    step: "verification_required",
-    rollNumber: user.rollNumber,
-    role: user.role,
-    // Sending the OTP in response so users in the sandbox can view/copy it easily,
-    // though in a production design it would go to an SMS or email transporter.
-    simulatedOtp: otpCode
   });
 });
 
@@ -1789,10 +1773,16 @@ async function initServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[DBATU Smart Server Core] System operational.`);
-    console.log(`[DBATU Smart Server Core] Bound on http://0.0.0.0:${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`[DBATU Smart Server Core] System operational.`);
+      console.log(`[DBATU Smart Server Core] Bound on http://0.0.0.0:${PORT}`);
+    });
+  } else {
+    console.log(`[Vercel Serverless] Delegating router handler to Vercel.`);
+  }
 }
 
 initServer();
+
+export default app;

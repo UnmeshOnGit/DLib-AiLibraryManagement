@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { School, ShieldCheck, Lock, User, KeyRound, AlertCircle, ArrowRight, Mail, GraduationCap } from "lucide-react";
+import { Library, ShieldCheck, Lock, User, KeyRound, AlertCircle, ArrowRight, Mail, GraduationCap } from "lucide-react";
 
 interface LoginProps {
   onLoginSuccess: (user: any) => void;
@@ -99,7 +99,12 @@ export default function Login({ onLoginSuccess, id }: LoginProps) {
         throw new Error(data.error || "Authentication failed. Clear your parameters.");
       }
 
-      if (data.step === "verification_required") {
+      if (data.user) {
+        setSuccessMsg("Success! Booting D-LIB Workspace...");
+        setTimeout(() => {
+          onLoginSuccess(data.user);
+        }, 1000);
+      } else if (data.step === "verification_required") {
         setShow2FA(true);
         setSimulatedOtp(data.simulatedOtp);
         setRollNumber(data.rollNumber);
@@ -129,7 +134,7 @@ export default function Login({ onLoginSuccess, id }: LoginProps) {
         throw new Error(data.error || "Security token invalid.");
       }
 
-      setSuccessMsg("Two-Step registration cleared! Booting DBATU Workspace...");
+      setSuccessMsg("Two-Step registration cleared! Booting D-LIB Workspace...");
       setTimeout(() => {
         onLoginSuccess(data.user);
       }, 1000);
@@ -162,13 +167,13 @@ export default function Login({ onLoginSuccess, id }: LoginProps) {
         transition={{ duration: 0.6 }}
         className="max-w-md w-full space-y-6 bg-white dark:bg-slate-900 p-8 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm"
       >
-        {/* DBATU Academic Header */}
+        {/* D-LIB Academic Header */}
         <div id="login-header-section" className="text-center">
-          <div className="mx-auto h-12 w-12 bg-blue-700 dark:bg-blue-650 rounded flex items-center justify-center text-white shadow-sm">
-            <School className="h-6 w-6" />
+          <div className="mx-auto h-12 w-12 bg-blue-700 dark:bg-blue-650 rounded flex items-center justify-center text-white shadow-sm premium-glow-blue">
+            <Library className="h-6 w-6" />
           </div>
           <h2 id="portal-title" className="mt-4 text-2xl font-bold tracking-tight text-slate-850 dark:text-white font-sans">
-            DBATU Portal
+            D-LIB Portal
           </h2>
           <p id="portal-subtitle" className="mt-1 text-xs uppercase tracking-wider text-slate-500 font-semibold">
             Smart Library &amp; Academic Roadmap

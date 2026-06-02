@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   BookOpen, Sparkles, Clock, Compass, Search, RotateCw, 
   CheckCircle, AlertTriangle, ExternalLink, Bookmark, GraduationCap, 
   MessageSquare, Star, User, BookCheck, RefreshCw, Send, Check,
-  Trophy, Target, Award, TrendingUp, Plus, Trash2, Calendar
+  Trophy, Target, Award, TrendingUp, Plus, Trash2, Calendar, Flame
 } from "lucide-react";
 import { Book, IssueRequest, UserRoadmap, Feedback } from "../types";
 import { RoadmapVisualization } from "./RoadmapVisualization";
@@ -74,6 +74,225 @@ const getDefaultTopicsForBranch = (branch: string) => {
     completed: false
   }));
 };
+
+interface StudentBookCardProps {
+  key?: any;
+  book: Book;
+  user: any;
+  handleIssueRequest: (bookId: string, duration: number) => void;
+}
+
+const COVER_IMAGES = [
+  "1515879218-11a2f54c1b5a", // coding and algorithms
+  "1544383835-bda2bc66a55d", // networking server lights
+  "1507668077129-56e32842fceb", // scientific equations glow
+  "1581092160607-ee22621dd758", // physics mechanics gears
+  "1532187643603-ba119ca4109e", // chemical tubes
+  "1509228468518-180dd4864904", // geometry and math
+  "1516979187457-637abb4f9353", // scholarly vintage open pages
+  "1532012197267-da84d127e765", // magical glowing open bible/book
+  "1543002587-9bc1ca1965ee", // minimalist stack of colored textbooks
+  "1497633762265-9d179a990aa6", // stacked primary colors shelf
+  "1512820790803-83ca734da794", // red binding novel cover
+  "1456513080510-7bf3a84b82f8", // study table cup of coffee beside opened tech text
+  "1521587760476-6c12a4b040da", // high ceiling ancient library shelves
+  "1440778303588-d9551f335538", // typewriter and warm vintage desk
+  "1513001900722-370f803f498d", // cloud book creative template
+  "1535905222005-0c92a912e70e", // contemporary scandinavian wood library
+  "1509062522246-3755977927d7", // classroom chalk board and desks
+  "1518152006812-edab29b069ac", // electronic matrix patterns
+  "1526374965328-7f61d4dc18c5", // database numbers matrix
+  "1498050108023-c5249f4df085", // clean tech laptop workplace
+  "1522071820081-009f0129c71c", // collective designers brainstorm
+  "1531988042231-d39a9cc12a9a", // research vial and plant growth
+  "1588666309990-d68f08e3d4a6", // dark engineering notebooks binders
+  "1557683316-973673baf926", // rich color swatch abstract
+  "1516979187457-637abb4f9353", // elegant library background
+  "1506880018603-83d5b814b5a6", // stylish minimal shelf
+  "1513001900722-370f803f498e"  // abstract artistic pages
+];
+
+const getBookCoverUrl = (bookId: string, title: string) => {
+  const seed = `${bookId}-${title || ""}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % COVER_IMAGES.length;
+  const code = COVER_IMAGES[idx];
+  return `https://images.unsplash.com/photo-${code}?auto=format&fit=crop&q=80&w=260`;
+};
+
+function StudentBookCard({ book, user, handleIssueRequest }: StudentBookCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const isAvailable = book.availableCopies > 0;
+  const coverUrl = getBookCoverUrl(book.id, book.title);
+
+  // Compute match score
+  let score = 75;
+  const userBranchLower = (user?.branch || '').toLowerCase();
+  const bookDeptLower = (book.department || '').toLowerCase();
+  if (userBranchLower && bookDeptLower && (
+    bookDeptLower.includes(userBranchLower) || 
+    userBranchLower.includes(bookDeptLower) ||
+    (userBranchLower.includes("comp") && bookDeptLower.includes("algorithm")) ||
+    (userBranchLower.includes("comp") && bookDeptLower.includes("database"))
+  )) {
+    score += 18;
+  }
+  const finalScore = Math.min(98, score);
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      id={`student-book-card-${book.id}`}
+      className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 hover:border-emerald-600 dark:hover:border-emerald-500 hover:shadow-md transition-all duration-300 relative overflow-hidden h-[335px]"
+    >
+      <div className="space-y-3 h-full flex flex-col justify-between">
+        <div className="space-y-3">
+          <div className="flex justify-between items-start gap-2">
+            <div className="flex flex-col gap-1.5 items-start">
+              <span className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-650 dark:text-emerald-350 rounded-lg text-[11px] font-bold tracking-wide uppercase font-sans">
+                {book.department}
+              </span>
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10 rounded-md text-[10px] font-black tracking-wider uppercase">
+                ⚡ {finalScore}% Match
+              </span>
+            </div>
+            <div className="flex items-center gap-1 font-semibold text-amber-500 text-xs text-nowrap">
+              <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500 shrink-0 inline" />
+              <span>{book.rating.toFixed(1)}</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white line-clamp-1 leading-snug uppercase">
+              {book.title}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              By {book.author}
+            </p>
+          </div>
+
+          <p className="text-xs text-slate-650 dark:text-slate-350 line-clamp-3">
+            {book.description}
+          </p>
+        </div>
+
+        <div className="space-y-2 pt-2 border-t border-slate-150 dark:border-slate-800 font-mono text-[11px]">
+          <div className="flex justify-between">
+            <span className="text-slate-455 font-semibold">Location:</span>
+            <span className="text-slate-700 dark:text-slate-200 line-clamp-1">{book.location}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-455 font-semibold">ISBN:</span>
+            <span className="text-slate-705 dark:text-slate-200">{book.isbn}</span>
+          </div>
+          <div className="flex justify-between items-center pt-1 border-t border-slate-100 dark:border-slate-800 font-sans text-xs">
+            <span className="text-slate-500 font-semibold">Available Stock:</span>
+            <span className={`font-extrabold ${isAvailable ? 'text-emerald-600 dark:text-emerald-450' : 'text-rose-550 dark:text-rose-450'}`}>
+              {book.availableCopies} / {book.totalCopies} Left
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide-Up Hover Animation Panel showing Cover Image & Book details */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ type: "spring", damping: 24, stiffness: 180 }}
+            className="absolute inset-0 bg-[#09150E]/98 dark:bg-slate-950/98 text-white p-5 rounded-2xl flex flex-col justify-between z-20 border border-emerald-500/30 shadow-2xl premium-glow-blue"
+          >
+            <div className="flex gap-3 h-[68%]">
+              {/* Photo representation */}
+              <div className="w-[36%] h-full rounded-lg overflow-hidden border border-emerald-500/10 shrink-0 relative bg-gradient-to-br from-emerald-800 to-emerald-950 flex flex-col justify-between p-2">
+                <div className="absolute left-1 inset-y-0 w-[2.5px] bg-emerald-400/20" />
+                <div className="flex flex-col gap-0.5 z-10 pl-1 overflow-hidden pointer-events-none">
+                  <span className="text-[6px] font-mono tracking-wider text-emerald-300 font-extrabold truncate uppercase">{book.category}</span>
+                  <span className="text-[7px] font-black leading-tight uppercase text-white line-clamp-3 leading-none">{book.title}</span>
+                </div>
+                <div className="z-10 pl-1 text-[5px] font-mono text-emerald-350 tracking-wider font-semibold truncate leading-none uppercase pointer-events-none">DBATU D-LIB</div>
+
+                <img
+                  src={coverUrl}
+                  alt={book.title}
+                  className={`absolute inset-0 w-full h-full object-cover transform scale-100 hover:scale-115 transition-all duration-750 z-15 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  referrerPolicy="no-referrer"
+                  onLoad={() => setImgLoaded(true)}
+                  onError={(e) => {
+                    const fallbackSeed = encodeURIComponent(book.title);
+                    const fallbackUrl = `https://picsum.photos/seed/${fallbackSeed}/200/300`;
+                    if ((e.target as HTMLImageElement).src !== fallbackUrl) {
+                      (e.target as HTMLImageElement).src = fallbackUrl;
+                    } else {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }
+                  }}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-transparent to-transparent z-16 pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 p-1 z-17 pointer-events-none">
+                  <span className="text-[7px] font-mono uppercase text-amber-300 block text-center">STUDY SELECTION</span>
+                </div>
+              </div>
+
+              {/* Text content details */}
+              <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-[8px]">
+                    <span className="font-mono text-emerald-400 font-bold bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/20">{book.id}</span>
+                    <span className="text-emerald-400 font-bold font-mono">⚡ {finalScore}% MATCH</span>
+                  </div>
+                  <h4 className="text-[11px] font-black tracking-tight leading-tight uppercase line-clamp-2 text-slate-100">
+                    {book.title}
+                  </h4>
+                  <p className="text-[9px] font-mono text-slate-300">by {book.author}</p>
+                </div>
+
+                <p className="text-[9px] text-slate-400 leading-relaxed line-clamp-3 font-sans italic">
+                  "{book.description}"
+                </p>
+              </div>
+            </div>
+
+            {/* Actions Panel */}
+            <div className="space-y-2 pt-2 border-t border-slate-800">
+              <div className="flex justify-between items-center text-[9px] font-mono">
+                <span className="text-slate-400 font-sans">ISBN {book.isbn}</span>
+                <span className="text-slate-400 line-clamp-1">Rack {book.location.split(' ')[1] || 'GENERAL'}</span>
+              </div>
+
+              <div>
+                {isAvailable ? (
+                  <button
+                    onClick={() => handleIssueRequest(book.id, 14)}
+                    className="w-full h-8 flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-650 hover:from-emerald-550 hover:to-teal-605 text-white rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all cursor-pointer border border-white/10 active:scale-95"
+                  >
+                    <Bookmark className="h-3.5 w-3.5 text-white" />
+                    File Checkout (14 Days)
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleIssueRequest(book.id, 14)}
+                    className="w-full h-8 flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all cursor-pointer border border-white/10 active:scale-95"
+                  >
+                    <Bookmark className="h-3.5 w-3.5 text-white" />
+                    Book Smart Reservation
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 interface StudentDashboardProps {
   user: any;
@@ -483,7 +702,7 @@ export default function StudentDashboard({ user, onLogout, id }: StudentDashboar
       if (res.ok) {
         setFeedbackSuccess(true);
         setFeedbackComment('');
-        triggerToast("success", "Feedback posted directly to general DBATU records.");
+        triggerToast("success", "Feedback posted directly to central D-LIB records.");
       } else {
         triggerToast("error", "Feedback log was rejected.");
       }
@@ -535,6 +754,63 @@ export default function StudentDashboard({ user, onLogout, id }: StudentDashboar
               <span>Settle Outstanding Library Fines: <strong className="text-white font-mono">₹{activeFines}.05</strong></span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Dynamic Animated Study Hub Metrics Panel */}
+      <div id="student-live-metrics-console" className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="md:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden premium-glow-blue">
+          {/* Subtly shimmering background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="space-y-4 w-full md:max-w-md">
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-blue-500 uppercase block">INTELLIGENT KNOWLEDGE COPILOT</span>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase">Your Weekly Learning Velocity</h3>
+            </div>
+
+            {/* Custom styled animated linear progress bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-[11px] text-slate-500 font-medium">
+                <span className="flex items-center gap-1.5"><TrendingUp className="h-3.5 w-3.5 text-blue-500 animate-pulse" /> Semester Syllabus Match Target</span>
+                <span className="font-bold font-mono">78% Sync Rate</span>
+              </div>
+              <div className="h-2 w-full bg-slate-105 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200/40 dark:border-slate-850">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 rounded-full animate-pulse transition-all duration-1000"
+                  style={{ width: '78%' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full md:w-auto flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-800/80 pt-3 md:pt-0 md:pl-5 shrink-0">
+            <div className="text-left md:text-right">
+              <span className="text-[9px] uppercase font-mono tracking-wider text-slate-405 block">Next Milestone Node</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-indigo-200 block">Deploy CS-4.2 Stack</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg shadow-3xs premium-glow-blue cursor-pointer whitespace-nowrap">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-spin" /> Recalculate AI Course Map
+            </div>
+          </div>
+        </div>
+
+        {/* Live Learning State / Streak box */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-blue-500 group-hover:scale-110 transition-transform">
+            <Flame className="h-16 w-16" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-wider text-emerald-500 uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Continuous Flow
+            </div>
+            <h4 className="text-base font-black font-mono mt-1 text-slate-850 dark:text-white">12-Day Streak</h4>
+            <p className="text-[10px] text-slate-500 leading-normal mt-0.5">Consecutive logins logging study hours directly to your general profile!</p>
+          </div>
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 mt-2 flex justify-between items-center text-[9px] font-mono">
+            <span className="text-slate-400">XP LEVEL UP</span>
+            <span className="text-blue-500 font-bold">+45 XP Earned</span>
+          </div>
         </div>
       </div>
 
@@ -621,102 +897,14 @@ export default function StudentDashboard({ user, onLogout, id }: StudentDashboar
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {books.map((book) => {
-                  const isAvailable = book.availableCopies > 0;
-                  return (
-                    <motion.div
-                      layout
-                      id={`student-book-card-${book.id}`}
-                      key={book.id}
-                      className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 hover:border-blue-600 dark:hover:border-blue-500 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.025]"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-start gap-2">
-                          <div className="flex flex-col gap-1.5 items-start">
-                            <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-650 dark:text-blue-350 rounded-lg text-[11px] font-bold tracking-wide uppercase font-sans">
-                              {book.department}
-                            </span>
-                            {(() => {
-                              let score = 75;
-                              const userBranchLower = (user?.branch || '').toLowerCase();
-                              const bookDeptLower = (book.department || '').toLowerCase();
-                              if (userBranchLower && bookDeptLower && (
-                                bookDeptLower.includes(userBranchLower) || 
-                                userBranchLower.includes(bookDeptLower) ||
-                                (userBranchLower.includes("comp") && bookDeptLower.includes("algorithm")) ||
-                                (userBranchLower.includes("comp") && bookDeptLower.includes("database"))
-                              )) {
-                                score += 18;
-                              }
-                              const finalScore = Math.min(98, score);
-                              return (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10 rounded-md text-[10px] font-black tracking-wider uppercase">
-                                  ⚡ {finalScore}% Match
-                                </span>
-                              );
-                            })()}
-                          </div>
-                          <div className="flex items-center gap-1 font-semibold text-amber-500 text-xs">
-                            <Star className="h-3.5 w-3.5 fill-amber-500" />
-                            {book.rating.toFixed(1)}
-                          </div>
-                        </div>
-
-                        <div>
-                          <h3 className="text-base font-extrabold text-slate-900 dark:text-white line-clamp-2 leading-snug">
-                            {book.title}
-                          </h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            By {book.author}
-                          </p>
-                        </div>
-
-                        <p className="text-xs text-slate-600 dark:text-slate-350 line-clamp-3">
-                          {book.description}
-                        </p>
-
-                        <div className="pt-2 text-[11px] space-y-1 bg-slate-50 dark:bg-slate-950/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-850 font-mono">
-                          <div className="flex justify-between">
-                            <span className="text-slate-450">Location Rack:</span>
-                            <span className="text-slate-700 dark:text-slate-200">{book.location}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-450">ISBN Number:</span>
-                            <span className="text-slate-700 dark:text-slate-200">{book.isbn}</span>
-                          </div>
-                          <div className="flex justify-between items-center mt-1 pt-1 border-t border-slate-150 dark:border-slate-800 font-sans text-xs">
-                            <span className="text-slate-500 font-semibold">Available Stock:</span>
-                            <span className={`font-extrabold ${isAvailable ? 'text-emerald-600 dark:text-emerald-450' : 'text-rose-500 dark:text-rose-400'}`}>
-                              {book.availableCopies} / {book.totalCopies} Left
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pt-2">
-                        {isAvailable ? (
-                          <button
-                            id={`issue-alloc-btn-${book.id}`}
-                            onClick={() => handleIssueRequest(book.id, 14)}
-                            className="w-full py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-650 dark:hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
-                          >
-                            <Bookmark className="h-3.5 w-3.5" />
-                            File Checkout (14 Days)
-                          </button>
-                        ) : (
-                          <button
-                            id={`reserve-alloc-btn-${book.id}`}
-                            onClick={() => handleIssueRequest(book.id, 14)}
-                            className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
-                          >
-                            <Bookmark className="h-3.5 w-3.5 text-white" />
-                            Book Smart Reservation
-                          </button>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                {books.map((book) => (
+                  <StudentBookCard
+                    key={book.id}
+                    book={book}
+                    user={user}
+                    handleIssueRequest={handleIssueRequest}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -1294,13 +1482,13 @@ export default function StudentDashboard({ user, onLogout, id }: StudentDashboar
                 General Campus Service Review Form
               </h2>
               <p className="text-slate-500 dark:text-slate-400 text-xs">
-                Feedback reports are recorded directly in the admin audit panel to improve central DBATU library efficiency.
+                Feedback reports are recorded directly in the admin audit panel to improve central D-LIB library efficiency.
               </p>
             </div>
 
             {feedbackSuccess && (
               <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-450 text-xs text-center font-semibold">
-                Report logged successfully! Thank you for supporting DBATU technological systems.
+                Report logged successfully! Thank you for supporting D-LIB technological systems.
               </div>
             )}
 
