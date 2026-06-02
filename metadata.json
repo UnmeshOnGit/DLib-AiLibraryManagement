@@ -1,0 +1,6 @@
+{
+  "name": "DBATU Smart Library & Skill Companion",
+  "description": "A smart academic support system for DBATU featuring library catalog search, personalized recommendations, book issuing/renewals tracking, interactive skill learning roadmaps, real-time admin logging, feedback collection, and 2FA authentication.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

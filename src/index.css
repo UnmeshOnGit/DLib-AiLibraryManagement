@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;750;900&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Premium Expanded Dark Theme Color System - SaaS Modern Quality */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-150: #eaf0f6;
+  --color-slate-200: #e2e8f0;
+  --color-slate-205: #dae3ee;
+  --color-slate-250: #cbd5e1;
+  --color-slate-300: #B0B0B0; /* Text Secondary */
+  --color-slate-350: #a3a3a3; /* Text Secondary Muted */
+  --color-slate-400: #808080; /* Text Muted */
+  --color-slate-450: #6b7280;
+  --color-slate-455: #4b5563;
+  --color-slate-500: #374151;
+  --color-slate-550: #1f2937;
+  --color-slate-600: #303030; /* Divider */
+  --color-slate-650: #2A2A2A; /* Border */
+  --color-slate-700: #252525; /* Elevated Surface / Divider */
+  --color-slate-755: #1E1E1E; /* Card Background */
+  --color-slate-800: #2A2A2A; /* Card Border */
+  --color-slate-850: #1E1E1E; /* Card Background */
+  --color-slate-855: #252525; /* Elevated Card */
+  --color-slate-900: #1A1A1A; /* Surface */
+  --color-slate-905: #121212; /* Secondary Background */
+  --color-slate-950: #121212; /* Secondary Background */
+  --color-slate-955: #0A0A0A; /* Primary Background */
+
+  /* Primary High-fidelity Neon Accents */
+  --color-blue-500: #4F8CFF; /* Primary Accent Blue */
+  --color-blue-600: #3b76eb;
+  --color-blue-650: #4F8CFF;
+  --color-emerald-500: #00D4AA; /* Secondary Accent Emerald */
+  --color-emerald-600: #00D4AA;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Standard System-Wide Frosted Glass Styling Control */
+
+/* Dynamic blur transitions for the system */
+#app-theme-container,
+header#app-main-header,
+footer#app-main-footer,
+.glass-card,
+div.bg-white {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              backdrop-filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light Mode System-Wide Glass Surfaces */
+header#app-main-header,
+div.bg-white.rounded-2xl,
+div.bg-white.rounded-xl,
+div.bg-white.rounded-lg,
+.glass-pane {
+  background-color: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(14px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 10px 30px -5px rgba(100, 116, 139, 0.04) !important;
+}
+
+/* Dark Mode System-Wide Glass Surfaces */
+.dark header#app-main-header,
+.dark div.bg-white.rounded-2xl,
+.dark div.bg-white.rounded-xl,
+.dark div.bg-white.rounded-lg,
+.dark div.bg-white.p-6,
+.dark div.bg-white.p-5,
+.dark div.dark\:bg-slate-900.rounded-2xl,
+.dark div.dark\:bg-slate-900.rounded-xl,
+.dark div.dark\:bg-slate-900.rounded-lg,
+.dark div.dark\:bg-slate-905,
+.dark .glass-pane {
+  background-color: rgba(26, 26, 26, 0.45) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(255, 255, 255, 0.03) inset !important;
+}
+
+/* Premium rounding matching exactly 24dp for modern elevated cards */
+div.rounded-2xl, 
+.rounded-2xl {
+  border-radius: 24px !important;
+}
+
+/* Specific sub-element overrides to prevent double-blurring stacking issues */
+.dark div.bg-slate-50, 
+.dark div.dark\:bg-slate-950\/30,
+.dark div.dark\:bg-slate-955\/20,
+.dark div.dark\:bg-slate-950\/40,
+.dark div.dark\:bg-slate-950,
+.dark div.bg-slate-950\/40 {
+  background-color: rgba(18, 18, 18, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* High-fidelity Neon accents & interactive glow guidelines */
+.premium-glow-blue {
+  box-shadow: 0 0 25px rgba(79, 140, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.premium-glow-blue:hover {
+  box-shadow: 0 0 35px rgba(79, 140, 255, 0.2);
+  border-color: rgba(79, 140, 255, 0.4) !important;
+}
+
+.premium-glow-emerald {
+  box-shadow: 0 0 25px rgba(0, 212, 170, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.premium-glow-emerald:hover {
+  box-shadow: 0 0 35px rgba(0, 212, 170, 0.2);
+  border-color: rgba(0, 212, 170, 0.4) !important;
+}
+
+/* Clean up scrollbars for a highly futuristic glass aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
