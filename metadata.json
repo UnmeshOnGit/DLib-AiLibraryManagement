@@ -1,0 +1,6 @@
+{
+  "name": "Smart Academic Hub",
+  "description": "An intelligent university library management system featuring AI learning roadmap generation, dynamic book recommendation engine, study planner, progress tracker, and chatbot.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

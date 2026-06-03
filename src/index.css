@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;550;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --app-bg: #0d1325;
+  --app-text: #f1f5f9;
+  --app-white: #ffffff;
+  --app-slate-400: #94a3b8;
+  --app-slate-300: #cbd5e1;
+  --app-slate-500: #64748b;
+  --app-slate-950: #020617;
+  --app-slate-900: #0f172a;
+  --app-slate-905: #0f172a;
+  --app-slate-800: #1e293b;
+  --app-border-white-10: rgba(255, 255, 255, 0.1);
+  --app-border-white-20: rgba(255, 255, 255, 0.2);
+  --app-border-slate-850: #1e293b;
+  --app-glow: rgba(16, 185, 129, 0.2);
+}
+
+/* Redefine variables under the light selector */
+.light {
+  --app-bg: #f8fafc; /* Beautiful crisp slate-50/white background */
+  --app-text: #0f172a; /* High contrast Dark Charcoal Text */
+  --app-white: #0f172a; /* Slate-900 instead of white for labels */
+  --app-slate-400: #64748b; /* Gray-500 */
+  --app-slate-300: #334155; /* Gray-700 */
+  --app-slate-500: #94a3b8; /* Gray-400 */
+  --app-slate-950: #ffffff; /* pure white cards for absolute modern clarity */
+  --app-slate-900: #f1f5f9; /* light grey panels */
+  --app-slate-905: #f8fafc; /* secondary background accents */
+  --app-slate-800: #e2e8f0; /* elegant borders */
+  --app-border-white-10: rgba(15, 23, 42, 0.08); /* elegant soft border */
+  --app-border-white-20: rgba(15, 23, 42, 0.14);
+  --app-border-slate-850: #cbd5e1;
+  --app-glow: rgba(59, 130, 246, 0.03);
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Dynamically mapped utility colors for instant adaptation */
+  --color-slate-950: var(--app-slate-950);
+  --color-slate-900: var(--app-slate-900);
+  --color-slate-800: var(--app-slate-800);
+
+  /* Remap primary colors to elegant Emerald green */
+  --color-blue-50: var(--color-emerald-50);
+  --color-blue-100: var(--color-emerald-100);
+  --color-blue-200: var(--color-emerald-200);
+  --color-blue-300: var(--color-emerald-300);
+  --color-blue-400: var(--color-emerald-400);
+  --color-blue-500: var(--color-emerald-500);
+  --color-blue-600: var(--color-emerald-600);
+  --color-blue-700: var(--color-emerald-700);
+  --color-blue-800: var(--color-emerald-800);
+  --color-blue-900: var(--color-emerald-900);
+  --color-blue-950: var(--color-emerald-950);
+
+  --color-indigo-50: var(--color-emerald-50);
+  --color-indigo-100: var(--color-emerald-100);
+  --color-indigo-200: var(--color-emerald-200);
+  --color-indigo-300: var(--color-emerald-300);
+  --color-indigo-400: var(--color-emerald-400);
+  --color-indigo-500: var(--color-emerald-500);
+  --color-indigo-600: var(--color-emerald-600);
+  --color-indigo-700: var(--color-emerald-700);
+  --color-indigo-800: var(--color-emerald-800);
+  --color-indigo-900: var(--color-emerald-900);
+  --color-indigo-950: var(--color-emerald-950);
+}
+
+/* Robust light theme class-level overrides to guarantee perfect typography and readability */
+.light {
+  background-color: #f8fafc !important;
+}
+.light .text-white {
+  color: #0f172a !important;
+}
+.light .text-slate-100 {
+  color: #1e293b !important;
+}
+.light .text-slate-200 {
+  color: #334155 !important;
+}
+.light .text-slate-300 {
+  color: #475569 !important;
+}
+.light .text-slate-400 {
+  color: #64748b !important;
+}
+.light .text-slate-500 {
+  color: #64748b !important;
+}
+.light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+.light .bg-white\/5 {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .bg-white\/10 {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+.light .bg-white\/20 {
+  background-color: #e2e8f0 !important;
+}
+.light .border-slate-800 {
+  border-color: #e2e8f0 !important;
+}
+.light .border-slate-850 {
+  border-color: #cbd5e1 !important;
+}
+.light .bg-slate-905 {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .bg-slate-950\/40 {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .bg-slate-900\/25 {
+  background-color: #f8fafc !important;
+}
+.light .bg-slate-900\/40 {
+  background-color: #f1f5f9 !important;
+}
+.light .bg-slate-900\/10 {
+  background-color: rgba(15, 23, 42, 0.03) !important;
+}
+.light .bg-slate-950\/60 {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+.light .bg-slate-950\/20 {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+.light .bg-slate-950/20 {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+.light .backdrop-blur-xl {
+  backdrop-filter: none !important;
+}
+.light .bg-white\/0.03 {
+  background-color: #ffffff !important;
+}
+.light .bg-white\/\[0\.03\] {
+  background-color: #ffffff !important;
+}
+.light input {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+.light input::placeholder {
+  color: #94a3b8 !important;
+}
+.light textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Winding Road Roadmap SVG style helpers */
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.road-animate-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

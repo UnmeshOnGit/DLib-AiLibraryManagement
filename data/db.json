@@ -1,0 +1,547 @@
+{
+  "users": [
+    {
+      "id": "user-student",
+      "name": "Unmesh Sutar",
+      "email": "unmeshsutar33@gmail.com",
+      "studentId": "U-2026-9041",
+      "department": "Computer Science",
+      "year": "3rd Year",
+      "role": "student",
+      "passwordHash": "703b0a3d6ad75b649a28adde7d83c6251da457549263bc7ff45ec709b0a8448b",
+      "readingStreak": 5,
+      "lastReadingActivityDate": "2026-06-01",
+      "streakPoints": 240,
+      "badges": [
+        "Early Adopter",
+        "Bookworm Gold",
+        "Python Ninja"
+      ],
+      "favoriteCategories": [
+        "Coding & AI",
+        "Web Development"
+      ],
+      "favoriteAuthors": [
+        "Dr. Catherine Meadows"
+      ],
+      "interests": [
+        "Python",
+        "Machine Learning",
+        "Web Development"
+      ],
+      "goals": [
+        {
+          "id": "goal-1",
+          "type": "weekly",
+          "description": "Read 2 hours of Advanced Python",
+          "targetValue": 120,
+          "currentValue": 90,
+          "deadline": "2026-06-05",
+          "completed": false
+        },
+        {
+          "id": "goal-2",
+          "type": "monthly",
+          "description": "Read 3 Complete Books",
+          "targetValue": 3,
+          "currentValue": 1,
+          "deadline": "2026-06-30",
+          "completed": false
+        }
+      ],
+      "createdAt": "2026-05-01T08:00:00Z",
+      "approved": true
+    },
+    {
+      "id": "user-student-test",
+      "name": "Demo Student",
+      "email": "student@hub.edu",
+      "studentId": "U-2026-0042",
+      "department": "Computer Science",
+      "year": "1st Year",
+      "role": "student",
+      "passwordHash": "703b0a3d6ad75b649a28adde7d83c6251da457549263bc7ff45ec709b0a8448b",
+      "readingStreak": 3,
+      "lastReadingActivityDate": "2026-06-01",
+      "streakPoints": 120,
+      "badges": [
+        "Early Adopter",
+        "Fresh Explorer"
+      ],
+      "favoriteCategories": [
+        "Coding & AI"
+      ],
+      "favoriteAuthors": [],
+      "interests": [
+        "Python"
+      ],
+      "goals": [
+        {
+          "id": "goal-test-1",
+          "type": "weekly",
+          "description": "Read 1 hour of Python Basics",
+          "targetValue": 60,
+          "currentValue": 45,
+          "deadline": "2026-06-05",
+          "completed": false
+        }
+      ],
+      "createdAt": "2026-05-15T10:00:00Z",
+      "approved": true
+    },
+    {
+      "id": "user-admin",
+      "name": "Dr. Eleanor Vance (Librarian)",
+      "email": "librarian@hub.edu",
+      "role": "admin",
+      "department": "Administration",
+      "passwordHash": "ab8e89c55367f55a2f933b8dc8a9994d61f997df2b402274eb943fa22d77394a",
+      "readingStreak": 12,
+      "streakPoints": 600,
+      "badges": [
+        "Chief Scholar",
+        "Architect of Knowledge",
+        "Guardian of Books"
+      ],
+      "favoriteCategories": [
+        "Academic",
+        "History"
+      ],
+      "favoriteAuthors": [],
+      "interests": [],
+      "goals": [],
+      "createdAt": "2026-04-15T09:00:00Z",
+      "approved": true
+    }
+  ],
+  "books": [
+    {
+      "id": "book-1",
+      "title": "Introduction to Python & Data Analysis",
+      "author": "Dr. Catherine Meadows",
+      "isbn": "978-0134076430",
+      "category": "Coding & AI",
+      "subject": "Programming basics, Pandas, NumPy, Visuals",
+      "department": "Computer Science",
+      "publisher": "Academic Oxford Press",
+      "language": "English",
+      "edition": "4th Edition",
+      "description": "The definitive undergraduate text on utilizing python for core computing, data visualization, and preparing data structures for machine learning pipelines.",
+      "coverImage": "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=400",
+      "quantity": 5,
+      "availableCopies": 4,
+      "ratings": [
+        5,
+        4,
+        5,
+        5,
+        4
+      ],
+      "ratingValue": 4.6,
+      "popularity": 24,
+      "addedAt": "2026-01-10T12:00:00Z"
+    },
+    {
+      "id": "book-2",
+      "title": "Advanced Machine Learning Algorithms",
+      "author": "Prateek Harrison",
+      "isbn": "978-1492032649",
+      "category": "Coding & AI",
+      "subject": "Neural Networks, Deep Learning, Transformers",
+      "department": "Computer Science",
+      "publisher": "O'Reilly Media",
+      "language": "English",
+      "edition": "2nd Edition",
+      "description": "An immersive study into high-dimensional vector spaces, backpropagation mechanics, convolutional neural networks, and modern LLM architecture mechanics.",
+      "coverImage": "https://images.unsplash.com/photo-1527474305487-b87b222841cc?auto=format&fit=crop&q=80&w=400",
+      "quantity": 3,
+      "availableCopies": 3,
+      "ratings": [
+        5,
+        5,
+        5,
+        4
+      ],
+      "ratingValue": 4.8,
+      "popularity": 18,
+      "addedAt": "2026-02-15T09:30:00Z"
+    },
+    {
+      "id": "book-3",
+      "title": "Full-Stack Web Architectures: From HTML to NextJS",
+      "author": "Robert T. Henderson",
+      "isbn": "978-1119717256",
+      "category": "Web Development",
+      "subject": "React, Node, Express, Databases",
+      "department": "Computer Science",
+      "publisher": "Wiley Publishing",
+      "language": "English",
+      "edition": "1st Edition",
+      "description": "A practical guide to designing robust modern web applications, covering relational & non-relational database models, client SPA routing, caching layers, and responsive UI layout systems.",
+      "coverImage": "https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&q=80&w=400",
+      "quantity": 4,
+      "availableCopies": 4,
+      "ratings": [
+        4,
+        4,
+        5,
+        5
+      ],
+      "ratingValue": 4.5,
+      "popularity": 32,
+      "addedAt": "2026-03-01T15:20:00Z"
+    },
+    {
+      "id": "book-4",
+      "title": "Civil Engineering Thermodynamics & Material Strength",
+      "author": "Prof. Arthur Pendelton",
+      "isbn": "978-0073398181",
+      "category": "Civil & Materials",
+      "subject": "Structural design, heat transfer, stress loads",
+      "department": "Engineering",
+      "publisher": "McGraw Hill Academic",
+      "language": "English",
+      "edition": "8th Edition",
+      "description": "Essential structural load equations, elastic mechanics, shearing resistance, thermal expansion indexes, and foundations math for civil installations.",
+      "coverImage": "https://images.unsplash.com/photo-1581094288338-2314dddb7ecc?auto=format&fit=crop&q=80&w=400",
+      "quantity": 2,
+      "availableCopies": 2,
+      "ratings": [
+        4,
+        4,
+        3,
+        5
+      ],
+      "ratingValue": 4,
+      "popularity": 9,
+      "addedAt": "2026-01-20T10:00:00Z"
+    },
+    {
+      "id": "book-5",
+      "title": "Microelectronic Circuits & Signal Networks",
+      "author": "Adel S. Sedra",
+      "isbn": "978-0190853464",
+      "category": "Electrical Engineering",
+      "subject": "Silicon chips, MOSFETs, Signal filtering, Logic gates",
+      "department": "Engineering",
+      "publisher": "Oxford University Press",
+      "language": "English",
+      "edition": "10th Edition",
+      "description": "The gold standard text on designing integrated circuits, physical properties of diodes, transistor biasing, noise reduction algorithms, and analog-to-digital controllers.",
+      "coverImage": "https://images.unsplash.com/photo-1631553127989-130a139a1fe0?auto=format&fit=crop&q=80&w=400",
+      "quantity": 3,
+      "availableCopies": 3,
+      "ratings": [
+        5,
+        4,
+        5,
+        4,
+        5
+      ],
+      "ratingValue": 4.6,
+      "popularity": 15,
+      "addedAt": "2026-02-05T14:40:00Z"
+    },
+    {
+      "id": "book-6",
+      "title": "Consumer Marketing & Brand Psychology",
+      "author": "Melissa Sinclair",
+      "isbn": "978-0136113942",
+      "category": "Business & Marketing",
+      "subject": "Behavior metrics, Brand positioning, Campaigns",
+      "department": "Business Administration",
+      "publisher": "Pearson Press USA",
+      "language": "English",
+      "edition": "6th Edition",
+      "description": "A comprehensive investigation into customer behavioral vectors, focus groups, pricing strategy elasticity, digital marketing funnel parameters, and brand sentiment analytics.",
+      "coverImage": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400",
+      "quantity": 4,
+      "availableCopies": 4,
+      "ratings": [
+        4,
+        5,
+        4
+      ],
+      "ratingValue": 4.3,
+      "popularity": 13,
+      "addedAt": "2026-03-22T08:00:00Z"
+    },
+    {
+      "id": "book-7",
+      "title": "Macroeconomics: Global Capital Flow & Markets",
+      "author": "N. Gregory Mankiw",
+      "isbn": "978-1319106010",
+      "category": "Finance & Economics",
+      "subject": "GDP, Tariffs, Inflation, FED rates, Debt models",
+      "department": "Business Administration",
+      "publisher": "Worth Publishers",
+      "language": "English",
+      "edition": "11th Edition",
+      "description": "Explores structural drivers of national wealth, financial institution architectures, reserve banks policies, FX pricing, systemic market bubbles, and sovereign debt dynamics.",
+      "coverImage": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=400",
+      "quantity": 2,
+      "availableCopies": 2,
+      "ratings": [
+        5,
+        4,
+        5,
+        5
+      ],
+      "ratingValue": 4.7,
+      "popularity": 11,
+      "addedAt": "2026-01-29T11:15:00Z"
+    },
+    {
+      "id": "book-8",
+      "title": "Typography Companion & Editorial Layout",
+      "author": "Elena Petrova",
+      "isbn": "978-1616890414",
+      "category": "UI-UX & Arts",
+      "subject": "Visual hierarchy, Letter spacing, Tracking, Kerning",
+      "department": "Fine Arts",
+      "publisher": "Princeton Architectural Press",
+      "language": "English",
+      "edition": "3rd Edition",
+      "description": "An editorial design bible detailing the history of typefaces, micro-typographic proportions, visual rhythms on grid systems, and pairing displays with body-level fonts.",
+      "coverImage": "https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&q=80&w=400",
+      "quantity": 2,
+      "availableCopies": 2,
+      "ratings": [
+        5,
+        5,
+        4,
+        5
+      ],
+      "ratingValue": 4.8,
+      "popularity": 8,
+      "addedAt": "2026-04-03T16:00:00Z"
+    },
+    {
+      "id": "book-9",
+      "title": "Cybersecurity Fundamentals: Defensive Systems",
+      "author": "Marc S. Dupont",
+      "isbn": "978-1260453256",
+      "category": "Cybersecurity",
+      "subject": "Cryptography, Ports, Firewalls, Buffer flows",
+      "department": "Computer Science",
+      "publisher": "McGraw Education",
+      "language": "English",
+      "edition": "3rd Edition",
+      "description": "Underpinning modern cybersecurity practices: public-key cryptography, virtual private gateways, threat containment routing, server hardening protocols, and secure packet inspection.",
+      "coverImage": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
+      "quantity": 3,
+      "availableCopies": 3,
+      "ratings": [
+        4,
+        5,
+        5,
+        3
+      ],
+      "ratingValue": 4.2,
+      "popularity": 16,
+      "addedAt": "2026-03-10T13:45:00Z"
+    },
+    {
+      "id": "book-10",
+      "title": "Cloud Native Deployment with DevOps tools",
+      "author": "Ananya Patel",
+      "isbn": "978-1098105402",
+      "category": "DevOps & Cloud",
+      "subject": "Docker, Kubernetes, GitHub Actions, Linux systems",
+      "department": "Computer Science",
+      "publisher": "O'Reilly Media",
+      "language": "English",
+      "edition": "2nd Edition",
+      "description": "Deploying high-availability full-stack containers. Details manual workflow triggers, clusters configuration, load balancers, SSL renewal hooks, and metrics tracking.",
+      "coverImage": "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=400",
+      "quantity": 3,
+      "availableCopies": 3,
+      "ratings": [
+        5,
+        5,
+        4,
+        5
+      ],
+      "ratingValue": 4.7,
+      "popularity": 19,
+      "addedAt": "2026-02-18T14:10:00Z"
+    }
+  ],
+  "issues": [
+    {
+      "id": "issue-1",
+      "bookId": "book-1",
+      "bookTitle": "Introduction to Python & Data Analysis",
+      "studentId": "user-student",
+      "studentName": "Unmesh Sutar",
+      "studentEmail": "unmeshsutar33@gmail.com",
+      "requestDate": "2026-05-20T10:00:00Z",
+      "issueDate": "2026-05-20T14:00:00Z",
+      "dueDate": "2026-06-03T14:00:00Z",
+      "status": "issued",
+      "fineAmount": 0.5,
+      "finePaid": false,
+      "isRenewed": false,
+      "qrCodeIssued": true
+    },
+    {
+      "id": "issue-test-1",
+      "bookId": "book-2",
+      "bookTitle": "Advanced Machine Learning Algorithms",
+      "studentId": "user-student-test",
+      "studentName": "Demo Student",
+      "studentEmail": "student@hub.edu",
+      "requestDate": "2026-05-22T09:00:00Z",
+      "issueDate": "2026-05-22T11:00:00Z",
+      "dueDate": "2026-06-05T11:00:00Z",
+      "status": "issued",
+      "fineAmount": 0,
+      "finePaid": false,
+      "isRenewed": false,
+      "qrCodeIssued": true
+    },
+    {
+      "id": "issue-old",
+      "bookId": "book-3",
+      "bookTitle": "Full-Stack Web Architectures: From HTML to NextJS",
+      "studentId": "user-student",
+      "studentName": "Unmesh Sutar",
+      "studentEmail": "unmeshsutar33@gmail.com",
+      "requestDate": "2026-05-01T09:00:00Z",
+      "issueDate": "2026-05-01T10:30:00Z",
+      "dueDate": "2026-05-15T10:30:00Z",
+      "returnDate": "2026-05-14T16:00:00Z",
+      "status": "returned",
+      "fineAmount": 0,
+      "finePaid": false,
+      "isRenewed": false
+    }
+  ],
+  "reservations": [],
+  "roadmaps": [
+    {
+      "id": "roadmap-seed",
+      "studentId": "user-student",
+      "skillName": "Python Core & Advanced Concepts",
+      "status": "active",
+      "progress": 25,
+      "stages": [
+        {
+          "id": "s1",
+          "name": "Beginner",
+          "goals": [
+            "Master standard functions and types",
+            "Configure environments & PIP Packages"
+          ],
+          "topics": [
+            {
+              "id": "t1-1",
+              "name": "Variables & Standard Data Types",
+              "description": "Strings, Integers, Floats, Booleans, basic arithmetic.",
+              "estimatedHours": 2
+            },
+            {
+              "id": "t1-2",
+              "name": "Lists, Tuples & Dictionaries",
+              "description": "Array-like concepts, slicing, appending, dictionary keys.",
+              "estimatedHours": 3
+            },
+            {
+              "id": "t1-3",
+              "name": "Conditional execution & loops",
+              "description": "If/Else checks, nested loops, While loops, list comprehensions.",
+              "estimatedHours": 4
+            }
+          ],
+          "resources": {
+            "youtube": [
+              {
+                "title": "Python for Beginners - Mosh",
+                "url": "https://youtube.com/watch?v=ff-Mosh"
+              }
+            ],
+            "docs": [
+              {
+                "title": "Python Standard Library Docs",
+                "url": "https://docs.python.org/3/"
+              }
+            ],
+            "courses": [
+              {
+                "title": "Python 101 on Kaggle Learning Pages",
+                "url": "https://kaggle.com/learn"
+              }
+            ],
+            "articles": [],
+            "practice": [],
+            "github": [],
+            "books": [],
+            "projects": []
+          }
+        },
+        {
+          "id": "s2",
+          "name": "Intermediate",
+          "goals": [
+            "Implement OOP inheritance",
+            "Build small utility tools"
+          ],
+          "topics": [
+            {
+              "id": "t2-1",
+              "name": "Functional Programming & Lambdas",
+              "description": "Map, Filter, Reduce, generators, recursion.",
+              "estimatedHours": 4
+            },
+            {
+              "id": "t2-2",
+              "name": "Object Oriented Principles",
+              "description": "Classes, decorators, static methods, class inheritance.",
+              "estimatedHours": 6
+            }
+          ],
+          "resources": {
+            "youtube": [],
+            "docs": [],
+            "courses": [],
+            "articles": [],
+            "practice": [],
+            "github": [],
+            "books": [],
+            "projects": []
+          }
+        }
+      ],
+      "completedTopics": [
+        "t1-1"
+      ],
+      "createdAt": "2026-05-25T11:00:00Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1",
+      "userId": "user-student",
+      "title": "Welcome Unmesh!",
+      "message": "Your Smart Academic Hub registration is fully approved. Check out the library database or use the AI roadmap tool to begin.",
+      "date": "2026-05-20T10:00:00Z",
+      "read": false,
+      "type": "system"
+    }
+  ],
+  "planner": [
+    {
+      "id": "event-1",
+      "userId": "user-student",
+      "title": "Python Data Analysis Practicals",
+      "description": "Focus on chapter 3 arrays and Pandas slicing features.",
+      "start": "14:00",
+      "end": "15:30",
+      "dayOfWeek": 2,
+      "completed": false,
+      "color": "#2563EB"
+    }
+  ],
+  "otpCodes": [],
+  "examNotes": []
+}
