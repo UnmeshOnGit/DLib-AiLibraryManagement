@@ -595,31 +595,30 @@ async function generateContentWithFallback(params: {
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-async function startServer() {
+// Initialize Express Middleware & Config Synchronously (avoids race conditions on serverless platforms like Vercel)
+app.use(express.json());
 
-  app.use(express.json());
+// Log Middleware
+app.use((req, res, next) => {
+  console.log(`[HTTP Request] ${req.method} ${req.url}`);
+  next();
+});
 
-  // Log Middleware
-  app.use((req, res, next) => {
-    console.log(`[HTTP Request] ${req.method} ${req.url}`);
-    next();
-  });
-
-  // Dynamic fine counter on boot to update state based on current datetime
-  const now = new Date();
-  db.issues.forEach(item => {
-    if (item.status === 'issued' && item.dueDate) {
-      const due = new Date(item.dueDate);
-      if (now > due) {
-        const deltaMs = now.getTime() - due.getTime();
-        const deltaDays = Math.ceil(deltaMs / (1000 * 60 * 60 * 24));
-        item.fineAmount = deltaDays * 0.50; // $0.50 late fine per day
-      }
+// Dynamic fine counter on boot to update state based on current datetime
+const now = new Date();
+db.issues.forEach(item => {
+  if (item.status === 'issued' && item.dueDate) {
+    const due = new Date(item.dueDate);
+    if (now > due) {
+      const deltaMs = now.getTime() - due.getTime();
+      const deltaDays = Math.ceil(deltaMs / (1000 * 60 * 60 * 24));
+      item.fineAmount = deltaDays * 0.50; // $0.50 late fine per day
     }
-  });
-  saveDatabase();
+  }
+});
+saveDatabase();
 
-  // API ROUTING
+// API ROUTING
 
   // DB STATUS
   app.get('/api/db-status', (req, res) => {
@@ -3023,33 +3022,32 @@ This fundamental concept addresses key architectural models within contemporary 
     res.status(200).send(csvContent);
   });
 
-  // Serve static files inside production dist folder
-  if (process.env.VERCEL) {
-    console.log('[Vercel] Serverless routing initialized successfully');
-    return app;
+  // Serve static/dev/production logic
+  async function startServer() {
+    if (process.env.NODE_ENV !== 'production') {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: 'spa',
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), 'dist');
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Smart Academic Hub server boot running on http://0.0.0.0:${PORT}`);
+    });
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+  // Non-serverless fallback execution
+  if (!process.env.VERCEL) {
+    startServer().catch((err) => {
+      console.error("Critical error booting full-stack server application:", err);
     });
   }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Smart Academic Hub server boot running on http://0.0.0.0:${PORT}`);
-  });
-}
-
-startServer().catch((err) => {
-  console.error("Critical error booting full-stack server application:", err);
-});
 
 export default app;
