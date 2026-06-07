@@ -71,6 +71,40 @@ export default function App() {
     }
   }, []);
 
+  // Two-way synchronization between client-side localStorage and backend ephemeral server to secure registrants across restarts
+  useEffect(() => {
+    const syncDbWithServer = () => {
+      try {
+        const localDbStr = localStorage.getItem('academic_hub_persistent_db');
+        const clientDb = localDbStr ? JSON.parse(localDbStr) : null;
+
+        fetch('/api/db-sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ clientDb })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.db) {
+            localStorage.setItem('academic_hub_persistent_db', JSON.stringify(data.db));
+          }
+        })
+        .catch(err => console.error('[Sync Server] Error synchronizing database state:', err));
+      } catch (e) {
+        console.error('[Sync Client] Local storage parse failed:', e);
+      }
+    };
+
+    // 1. Initial sync immediately on load
+    syncDbWithServer();
+
+    // 2. Continuous alignment loop
+    const intervalId = setInterval(syncDbWithServer, 15000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   useEffect(() => {
     fetch('/api/db-status')
       .then(res => res.json())
@@ -80,6 +114,9 @@ export default function App() {
             connectionType: data.connectionType,
             isMongoActive: data.isMongoActive
           });
+          if (data.db) {
+            localStorage.setItem('academic_hub_persistent_db', JSON.stringify(data.db));
+          }
         }
       })
       .catch(err => console.error('Failed to load db status:', err));
