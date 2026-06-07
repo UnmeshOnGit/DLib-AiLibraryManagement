@@ -25,6 +25,16 @@ export function AuthSystem({ onLoginSuccess, onBack, initialRole = 'student' }: 
   const [otpError, setOtpError] = useState('');
   const [otpInfo, setOtpInfo] = useState('');
 
+  // Forgot Password States
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordStep, setForgotPasswordStep] = useState<1 | 2>(1);
+  const [forgotPasswordOtp, setForgotPasswordOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [forgotPasswordSuccessMsg, setForgotPasswordSuccessMsg] = useState('');
+  const [forgotPasswordOtpInfo, setForgotPasswordOtpInfo] = useState('');
+
   // General Messages
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -142,6 +152,74 @@ export function AuthSystem({ onLoginSuccess, onBack, initialRole = 'student' }: 
     }
   };
 
+  const handleRequestForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: forgotPasswordEmail })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Password recovery request failed');
+      }
+
+      setForgotPasswordOtpInfo(`A secure password recovery verification code has been simulated. Code printed: ${data.otpCode}`);
+      setForgotPasswordStep(2);
+      // Autofill simulated OTP
+      setForgotPasswordOtp(data.otpCode);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (newPassword !== confirmNewPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: forgotPasswordEmail,
+          otpCode: forgotPasswordOtp,
+          newPassword
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Resetting password failed');
+      }
+
+      setForgotPasswordSuccessMsg(data.message || 'Your password was changed successfully!');
+      // Effortlessly prefill the email and password field so they can login immediately
+      setEmail(forgotPasswordEmail);
+      setPassword(newPassword);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-transparent text-slate-100 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 relative">
       
@@ -172,7 +250,172 @@ export function AuthSystem({ onLoginSuccess, onBack, initialRole = 'student' }: 
         {/* Outer Form Box */}
         <div className="bg-white/5 border border-white/20 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
           
-          {isPendingApproval ? (
+          {isForgotPassword ? (
+            <div className="space-y-4 text-left py-1">
+              <h3 className="text-lg font-bold text-sky-400 flex items-center gap-2 mb-2">
+                <span>🔑 Reset Account Password</span>
+              </h3>
+
+              {forgotPasswordSuccessMsg ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-2xl">
+                    <p className="font-bold text-sm mb-1">🎉 Success!</p>
+                    <p className="text-slate-200">{forgotPasswordSuccessMsg}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotPasswordSuccessMsg('');
+                      setIsForgotPassword(false);
+                      setError('');
+                    }}
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition cursor-pointer text-center"
+                  >
+                    Proceed to Sign-In
+                  </button>
+                </div>
+              ) : forgotPasswordStep === 1 ? (
+                <form onSubmit={handleRequestForgotPassword} className="space-y-4">
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Provide the academic email address associated with your profile. We will standardly issue a simulated reset OTP code.
+                  </p>
+                  
+                  {error && (
+                    <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl flex items-start gap-2.5">
+                      <AlertCircle className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-300">Email Address</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-slate-500" />
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        value={forgotPasswordEmail}
+                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                        placeholder="student@university.edu"
+                        className="block w-full pl-10 pr-3 py-2 text-xs sm:text-sm bg-slate-950/80 border border-slate-800 rounded-xl focus:border-blue-600 focus:ring-0 text-white placeholder-slate-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(false);
+                        setError('');
+                      }}
+                      className="flex-1 py-2.5 border border-white/10 hover:bg-white/5 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="flex-1 flex justify-center items-center py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
+                    >
+                      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Get Recovery OTP'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="p-3.5 bg-amber-500/5 border border-amber-500/20 text-amber-400 text-xs rounded-xl space-y-2">
+                    <p className="font-semibold">✉️ OTP Security Token Issued</p>
+                    <p className="text-xs text-slate-200">{forgotPasswordOtpInfo}</p>
+                    <p className="text-[10px] text-slate-400 italic">This code automatically bypasses real SMTP constraints for seamless verification.</p>
+                  </div>
+
+                  {error && (
+                    <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl flex items-start gap-2.5">
+                      <AlertCircle className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono text-slate-300">6-Digit Recovery OTP</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Key className="h-4 w-4 text-slate-500" />
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={forgotPasswordOtp}
+                        onChange={(e) => setForgotPasswordOtp(e.target.value)}
+                        placeholder="Enter 6-digit code"
+                        className="block w-full pl-10 pr-3 py-2 text-xs sm:text-sm bg-slate-950/80 border border-slate-800 rounded-xl focus:border-blue-600 focus:ring-0 text-white placeholder-slate-500 font-mono tracking-widest text-center"
+                        maxLength={10}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-300">New Password</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Lock className="h-4 w-4 text-slate-500" />
+                        </div>
+                        <input
+                          type="password"
+                          required
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="block w-full pl-10 pr-3 py-2 text-xs sm:text-sm bg-slate-950/80 border border-slate-800 rounded-xl focus:border-blue-600 focus:ring-0 text-white placeholder-slate-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-300">Confirm Password</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Lock className="h-4 w-4 text-slate-500" />
+                        </div>
+                        <input
+                          type="password"
+                          required
+                          value={confirmNewPassword}
+                          onChange={(e) => setConfirmNewPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="block w-full pl-10 pr-3 py-2 text-xs sm:text-sm bg-slate-950/80 border border-slate-800 rounded-xl focus:border-blue-600 focus:ring-0 text-white placeholder-slate-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotPasswordStep(1);
+                        setError('');
+                      }}
+                      className="flex-1 py-2.5 border border-white/10 hover:bg-white/5 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition cursor-pointer"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="flex-1 flex justify-center items-center py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-sky-500/20 disabled:opacity-50 cursor-pointer"
+                    >
+                      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Confirm New Password'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          ) : isPendingApproval ? (
             <div className="space-y-5 text-left py-2">
               <div className="p-4 bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs rounded-2xl space-y-2">
                 <h4 className="font-extrabold flex items-center gap-1.5 text-sm text-amber-400">
@@ -454,7 +697,12 @@ export function AuthSystem({ onLoginSuccess, onBack, initialRole = 'student' }: 
                   <label className="text-xs font-semibold text-slate-300">Password</label>
                   <button
                     type="button"
-                    onClick={() => alert(`Self-recovery option: For testing, input passwords "student123" for student or "librarian123" for library admin.`)}
+                    onClick={() => {
+                      setIsForgotPassword(true);
+                      setForgotPasswordEmail(email);
+                      setForgotPasswordStep(1);
+                      setError('');
+                    }}
                     className="text-[10px] text-blue-400 hover:text-blue-300 transition cursor-pointer"
                   >
                     Forgot Password?
