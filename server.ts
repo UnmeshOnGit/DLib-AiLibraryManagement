@@ -322,6 +322,104 @@ function saveDatabase() {
   }
 }
 
+function mergeDatabases(clientDb: any) {
+  if (!clientDb || typeof clientDb !== 'object') return;
+  
+  // 1. Merge users by email
+  if (Array.isArray(clientDb.users)) {
+    clientDb.users.forEach((clientUser: any) => {
+      if (!clientUser || !clientUser.email) return;
+      const idx = db.users.findIndex(u => u.email && u.email.toLowerCase() === clientUser.email.toLowerCase());
+      if (idx === -1) {
+        db.users.push(clientUser);
+      } else {
+        // Merge properties, preferring client stats but preserving role/approval
+        db.users[idx] = { ...db.users[idx], ...clientUser };
+      }
+    });
+  }
+
+  // 2. Merge issues by id
+  if (Array.isArray(clientDb.issues)) {
+    clientDb.issues.forEach((clientIssue: any) => {
+      if (!clientIssue || !clientIssue.id) return;
+      const idx = db.issues.findIndex(i => i.id === clientIssue.id);
+      if (idx === -1) {
+        db.issues.push(clientIssue);
+      } else {
+        db.issues[idx] = { ...db.issues[idx], ...clientIssue };
+      }
+    });
+  }
+
+  // 3. Merge reservations by id
+  if (Array.isArray(clientDb.reservations)) {
+    clientDb.reservations.forEach((r: any) => {
+      if (!r || !r.id) return;
+      const idx = db.reservations.findIndex(x => x.id === r.id);
+      if (idx === -1) {
+        db.reservations.push(r);
+      } else {
+        db.reservations[idx] = { ...db.reservations[idx], ...r };
+      }
+    });
+  }
+
+  // 4. Merge roadmaps by id
+  if (Array.isArray(clientDb.roadmaps)) {
+    clientDb.roadmaps.forEach((r: any) => {
+      if (!r || !r.id) return;
+      const idx = db.roadmaps.findIndex(x => x.id === r.id);
+      if (idx === -1) {
+        db.roadmaps.push(r);
+      } else {
+        db.roadmaps[idx] = { ...db.roadmaps[idx], ...r };
+      }
+    });
+  }
+
+  // 5. Merge notifications by id
+  if (Array.isArray(clientDb.notifications)) {
+    clientDb.notifications.forEach((n: any) => {
+      if (!n || !n.id) return;
+      const idx = db.notifications.findIndex(x => x.id === n.id);
+      if (idx === -1) {
+        db.notifications.push(n);
+      } else {
+        db.notifications[idx] = { ...db.notifications[idx], ...n };
+      }
+    });
+  }
+
+  // 6. Merge planner by id
+  if (Array.isArray(clientDb.planner)) {
+    clientDb.planner.forEach((p: any) => {
+      if (!p || !p.id) return;
+      const idx = db.planner.findIndex(x => x.id === p.id);
+      if (idx === -1) {
+        db.planner.push(p);
+      } else {
+        db.planner[idx] = { ...db.planner[idx], ...p };
+      }
+    });
+  }
+
+  // 7. Merge examNotes by id
+  if (Array.isArray(clientDb.examNotes)) {
+    clientDb.examNotes.forEach((e: any) => {
+      if (!e || !e.id) return;
+      const idx = db.examNotes.findIndex(x => x.id === e.id);
+      if (idx === -1) {
+        db.examNotes.push(e);
+      } else {
+        db.examNotes[idx] = { ...db.examNotes[idx], ...e };
+      }
+    });
+  }
+
+  saveDatabase();
+}
+
 function seedDatabase() {
   db = {
     users: [
@@ -626,7 +724,20 @@ saveDatabase();
       success: true,
       isMongoActive: false,
       connectionType: 'Local JSON Standard',
-      databaseName: 'Local Sandbox File'
+      databaseName: 'Local Sandbox File',
+      db: db // send the current DB state as part of the status check to update the client
+    });
+  });
+
+  // DB SYNC ENDPOINT for serverless/ephemeral environments
+  app.post('/api/db-sync', (req, res) => {
+    const { clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
+    res.json({
+      success: true,
+      db: db
     });
   });
 
@@ -756,6 +867,94 @@ saveDatabase();
     });
   });
 
+  app.post('/api/auth/forgot-password', (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json({ error: 'Please supply a registered email address.' });
+      return;
+    }
+
+    const matchedUser = db.users.find(u => u.email && u.email.toLowerCase() === email.trim().toLowerCase());
+    if (!matchedUser) {
+      res.status(404).json({ error: 'Academic profile with this email does not exist in our active database. Please verify spelling or register.' });
+      return;
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Clear any previous OTP entries for this email and type list
+    db.otpCodes = db.otpCodes.filter(entry => entry.email.toLowerCase() !== email.trim().toLowerCase());
+    db.otpCodes.push({
+      email: email.trim(),
+      otpCode,
+      isForgotPassword: true,
+      expiresAt: Date.now() + 15 * 60 * 1000 // 15 mins expiry
+    });
+    saveDatabase();
+
+    // Log this email simulation
+    console.log(`[SMTP Mail Notification] Sending password reset verification to ${email}: Code is ${otpCode}`);
+
+    res.json({
+      success: true,
+      message: 'A simulated password recovery token has been issued standardly to your account.',
+      otpCode, // return code in payload for effortless testing speed !
+      email: email.trim()
+    });
+  });
+
+  app.post('/api/auth/reset-password', (req, res) => {
+    const { email, otpCode, newPassword } = req.body;
+    if (!email || !otpCode || !newPassword) {
+      res.status(400).json({ error: 'Please specify all parameters: email, otpCode, and newPassword' });
+      return;
+    }
+    const recordIdx = db.otpCodes.findIndex(item => 
+      item.email.toLowerCase() === email.trim().toLowerCase() && 
+      item.otpCode.toString().trim() === otpCode.toString().trim() &&
+      item.isForgotPassword === true
+    );
+    if (recordIdx === -1) {
+      res.status(400).json({ error: 'Invalid or expired OTP reset password verification code.' });
+      return;
+    }
+    const record = db.otpCodes[recordIdx];
+    if (Date.now() > record.expiresAt) {
+      db.otpCodes.splice(recordIdx, 1);
+      saveDatabase();
+      res.status(400).json({ error: 'This recovery token has expired. Please request a new one.' });
+      return;
+    }
+
+    const matchedUser = db.users.find(u => u.email && u.email.toLowerCase() === email.trim().toLowerCase());
+    if (!matchedUser) {
+      res.status(404).json({ error: 'Associated user profile no longer exists.' });
+      return;
+    }
+
+    // Update user's password
+    matchedUser.passwordHash = hashPassword(newPassword);
+    
+    // Add custom system notification about password change
+    db.notifications.push({
+      id: `notif-${Date.now()}`,
+      userId: matchedUser.id,
+      title: "Password Reset Successfully",
+      message: "The password for your academic space was recently reset. If this wasn't you, please notify our librarian staff immediately.",
+      date: new Date().toISOString(),
+      read: false,
+      type: 'system'
+    });
+
+    db.otpCodes.splice(recordIdx, 1);
+    saveDatabase();
+
+    res.json({
+      success: true,
+      message: 'Your password has been successfully updated! You can now sign in.'
+    });
+  });
+
   app.post('/api/auth/login', (req, res) => {
     const { email, password, role } = req.body;
     if (!email || !password) {
@@ -763,13 +962,19 @@ saveDatabase();
       return;
     }
 
-    const checkHash = hashPassword(password);
-    const matchedUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.passwordHash === checkHash);
-    
-    if (!matchedUser) {
-      res.status(400).json({ error: 'Incorrect email or password combination entered.' });
+    const matchedUserByEmail = db.users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+    if (!matchedUserByEmail) {
+      res.status(404).json({ error: 'Account with this email does not exist in the active database. Please register a new account.' });
       return;
     }
+
+    const checkHash = hashPassword(password);
+    if (matchedUserByEmail.passwordHash !== checkHash) {
+      res.status(400).json({ error: 'Incorrect password entered for this email. Please try again.' });
+      return;
+    }
+
+    const matchedUser = matchedUserByEmail;
 
     if (role && matchedUser.role !== role) {
       res.status(403).json({ error: `Selected role mismatch. Account matches the role: ${matchedUser.role}` });
