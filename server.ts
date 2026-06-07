@@ -417,6 +417,25 @@ function mergeDatabases(clientDb: any) {
     });
   }
 
+  // 8. Merge/synchronize otpCodes
+  if (!db.otpCodes) {
+    db.otpCodes = [];
+  }
+  if (Array.isArray(clientDb.otpCodes)) {
+    clientDb.otpCodes.forEach((clientOtp: any) => {
+      if (!clientOtp || !clientOtp.email || !clientOtp.otpCode) return;
+      const idx = db.otpCodes.findIndex(x => 
+        x.email.toLowerCase() === clientOtp.email.toLowerCase() && 
+        x.otpCode.toString().trim() === clientOtp.otpCode.toString().trim()
+      );
+      if (idx === -1) {
+        db.otpCodes.push(clientOtp);
+      } else {
+        db.otpCodes[idx] = { ...db.otpCodes[idx], ...clientOtp };
+      }
+    });
+  }
+
   saveDatabase();
 }
 
@@ -743,7 +762,10 @@ saveDatabase();
 
   // 1. AUTHENTICATION
   app.post('/api/auth/register', (req, res) => {
-    const { name, email, studentId, department, year, password } = req.body;
+    const { name, email, studentId, department, year, password, clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
     if (!name || !email || !studentId || !department || !year || !password) {
       res.status(400).json({ error: 'Please supply all required student parameters' });
       return;
@@ -794,12 +816,16 @@ saveDatabase();
       success: true,
       message: 'OTP verification code issued standardly to your account.',
       otpCode, // Handing back code directly for user's ultimate testing speed !
-      email
+      email,
+      db: db
     });
   });
 
   app.post('/api/auth/verify-otp', (req, res) => {
-    const { email, otpCode } = req.body;
+    const { email, otpCode, clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
     if (!email || !otpCode) {
       res.status(400).json({ error: 'Please specify parameters email and otpCode' });
       return;
@@ -844,7 +870,8 @@ saveDatabase();
       res.json({
         success: true,
         pendingApproval: true,
-        message: 'OTP Code verified successfully. Student registration created. Awaiting librarian staff confirmation.'
+        message: 'OTP Code verified successfully. Student registration created. Awaiting librarian staff confirmation.',
+        db: db
       });
       return;
     }
@@ -863,12 +890,16 @@ saveDatabase();
         badges: finalUser.badges,
         streakPoints: finalUser.streakPoints,
         readingStreak: finalUser.readingStreak
-      }
+      },
+      db: db
     });
   });
 
   app.post('/api/auth/forgot-password', (req, res) => {
-    const { email } = req.body;
+    const { email, clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
     if (!email) {
       res.status(400).json({ error: 'Please supply a registered email address.' });
       return;
@@ -899,12 +930,16 @@ saveDatabase();
       success: true,
       message: 'A simulated password recovery token has been issued standardly to your account.',
       otpCode, // return code in payload for effortless testing speed !
-      email: email.trim()
+      email: email.trim(),
+      db: db
     });
   });
 
   app.post('/api/auth/reset-password', (req, res) => {
-    const { email, otpCode, newPassword } = req.body;
+    const { email, otpCode, newPassword, clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
     if (!email || !otpCode || !newPassword) {
       res.status(400).json({ error: 'Please specify all parameters: email, otpCode, and newPassword' });
       return;
@@ -951,12 +986,16 @@ saveDatabase();
 
     res.json({
       success: true,
-      message: 'Your password has been successfully updated! You can now sign in.'
+      message: 'Your password has been successfully updated! You can now sign in.',
+      db: db
     });
   });
 
   app.post('/api/auth/login', (req, res) => {
-    const { email, password, role } = req.body;
+    const { email, password, role, clientDb } = req.body;
+    if (clientDb) {
+      mergeDatabases(clientDb);
+    }
     if (!email || !password) {
       res.status(400).json({ error: 'Email and password required' });
       return;
@@ -1026,7 +1065,8 @@ saveDatabase();
         favoriteCategories: matchedUser.favoriteCategories,
         interests: matchedUser.interests,
         goals: matchedUser.goals || []
-      }
+      },
+      db: db
     });
   });
 
